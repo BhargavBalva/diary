@@ -22,11 +22,26 @@
                     <div class="border rounded p-4 mb-4 shadow bg-gray-800 text-white">
                         <h3 class="text-lg font-bold mb-1">{{ $note->title }}</h3>
                         <p class="text-gray-300 mb-1">{{ $note->content }}</p>
-                        <p class="text-sm text-gray-400 mb-2">
+
+                        {{-- New fields --}}
+                        @if ($note->entry_date)
+                            <p class="text-sm text-gray-300"><strong>Date:</strong>
+                                {{ \Carbon\Carbon::parse($note->entry_date)->format('d M Y') }}</p>
+                        @endif
+
+                        @if ($note->mood)
+                            <p class="text-sm text-gray-300"><strong>Mood:</strong> {{ $note->mood }}</p>
+                        @endif
+
+                        @if ($note->location)
+                            <p class="text-sm text-gray-300"><strong>Location:</strong> {{ $note->location }}</p>
+                        @endif
+
+                        <p class="text-sm text-gray-400 mt-1">
                             Last Updated: {{ $note->updated_at->timezone('Asia/Kolkata')->format('Y-m-d H:i:s') }}
                         </p>
 
-                        <div>
+                        <div class="mt-2">
                             <a href="{{ route('notes.show', $note->id) }}"
                                 class="text-green-400 hover:underline mr-4">Show</a>
                             <a href="{{ route('notes.edit', $note->id) }}"

@@ -17,10 +17,15 @@ class NoteController extends Controller
     {
         $note = Note::findOrFail($id);
 
+        if ($note->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         $pdf = Pdf::loadView('notes.pdf', compact('note'));
 
         return $pdf->download("note-{$note->id}.pdf");
     }
+    
     public function index()
     {
         $notes = auth()->user()->notes()->latest()->get();
@@ -40,13 +45,20 @@ class NoteController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'content' => 'required',
+            'entry_date' => 'nullable|date',
+            'mood' => 'nullable|string|max:20',
+            'location' => 'nullable|string|max:255',
         ]);
+
 
         auth()->user()->notes()->create([
             'title' => $request->title,
             'content' => $request->content,
-            'date' => now()->toDateString(),
+            'entry_date' => $request->entry_date,
+            'mood' => $request->mood,
+            'location' => $request->location,
+            'user_id' => auth()->id(),
         ]);
 
         return redirect()->route('notes.index')->with('success', 'Note created successfully.');
@@ -55,8 +67,15 @@ class NoteController extends Controller
     public function show($id)
     {
         $note = Note::findOrFail($id);
+
+        // Ownership check
+        if ($note->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         return view('notes.show', compact('note'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -80,16 +99,23 @@ class NoteController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'content' => 'required',
+            'entry_date' => 'nullable|date',
+            'mood' => 'nullable|string|max:20',
+            'location' => 'nullable|string|max:255',
         ]);
 
         $note->update([
             'title' => $request->title,
             'content' => $request->content,
+            'entry_date' => $request->entry_date,
+            'mood' => $request->mood,
+            'location' => $request->location,
         ]);
 
         return redirect()->route('notes.index')->with('success', 'Note updated successfully.');
     }
+
 
     // Delete a note
     public function destroy(Note $note)
