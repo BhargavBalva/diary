@@ -11,6 +11,7 @@ This is a simple Laravel-based Notes application built using Laravel 11 and Vite
 - View All Notes
 - Edit Notes
 - Delete Notes
+- **Add Mood & Location to Notes** 📝🌍
 - **Export Individual Notes as PDF** 📄
 - Clean and minimal UI using Bootstrap
 - Form validations on both client-side and server-side
